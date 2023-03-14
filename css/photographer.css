@@ -6,9 +6,22 @@
     background-color: #FAFAFA;
     height: 300px;
     margin: 0 100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.photograph-header img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+    order: 2;
 }
 
 .contact_button {
+    order:1;
     font-size: 20px;
     font-weight: bold;
     color: white;
@@ -19,6 +32,55 @@
     background-color: #901C1C;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.nom {
+    color: #D3573C;
+    font-size: 64px;
+    font-weight: 100;
+    margin: 5px;
+}
+
+.conteneur .location {
+    color: #901C1C;
+    font-size: 24px;
+    margin: 5px;
+    margin-bottom: 20px;
+   }
+
+.conteneur .line {
+    font-size: 18px;
+    margin: 5px;
+    line-height: 23.44px;
+    color: #525252;
+}
+
+.buttonText {
+    font-weight: bold;
+}
+
+/* à remplacer par un onclick.listenerevent */
+.dropdownButton {
+    display: none;
+}
+
+.dropdownButton:hover{
+    display:block;
+}
+
+label {
+    margin-left: 30px;
+    background-color: #901C1C;
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.conteneurTri {
+    margin-left: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .modal {
