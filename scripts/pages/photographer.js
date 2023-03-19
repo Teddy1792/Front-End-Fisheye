@@ -62,10 +62,7 @@ function createMenu() {
     conteneurMenu.classList.add("conteneurMenu");
 
     const conteneurButtonsAndArrow = document.createElement("div");
-    conteneurButtonsAndArrow.classList.add("conteneurButtonAndArrow");
-
-    const conteneurButton1AndArrow = document.createElement("div");
-    conteneurButton1AndArrow.classList.add("conteneurButton1AndArrow");
+    conteneurButtonsAndArrow.classList.add("conteneurButtonsAndArrow");
 
     const dropdownArrow = document.createElement("div");
     dropdownArrow.classList.add("arrow");
@@ -94,9 +91,10 @@ function createMenu() {
     buttonTitre.classList.add("buttonTitre", "buttonMenu", "slider");
     buttonTitre.innerHTML = "Titre";
 
-    const main = document.getElementById("main");
     conteneurMenu.appendChild(buttonText);
     conteneurMenu.appendChild(conteneurButtonsAndArrow);
+    
+
     conteneurButtonsAndArrow.appendChild(conteneurButton);
     conteneurButtonsAndArrow.appendChild(dropdownArrow);
     conteneurButton.appendChild(buttonPopularite);
@@ -197,17 +195,26 @@ await init();
 //ouverture du menu (refactoriser!)
 const dropdownArrow = document.querySelector(".arrow");
 dropdownArrow.addEventListener("click", function(){
+    const titreSlider = document.querySelector(".titreSlider");
+    const dateSlider = document.querySelector(".dateSlider");
+    const slider = document.querySelector(".slider");
     dropdownArrow.classList.add("arrowDown");
-    const menu = document.querySelector(".conteneurButtonAndArrow");
+    const menu = document.querySelector(".conteneurButtonsAndArrow");
     menu.style.height = "115px";
     const buttonDate = document.querySelector(".buttonDate");
     const buttonTitre = document.querySelector(".buttonTitre");
     buttonDate.style.display = "block";
     buttonTitre.style.display = "block";
+    slider.style.display = "block";
+    titreSlider.style.opacity = "1";
+    dateSlider.style.opacity = "1";
 });
 
 //fermeture du menu
 window.onclick = function(event) {
+    const sliders = document.querySelectorAll(".slider");
+    const titreSlider = document.querySelector(".titreSlider");
+    const dateSlider = document.querySelector(".dateSlider");
     if (!event.target.matches(".arrow")
         && !event.target.matches(".buttonMenu")
     ) {
@@ -217,16 +224,16 @@ window.onclick = function(event) {
         if (openDropdown.classList.contains("arrowDown")) {
           openDropdown.classList.remove("arrowDown");
         }
-        const sliders = document.querySelectorAll(".slider");
         sliders.forEach(slider => {
             if (slider.classList.contains("slider")) {
                 slider.style.display = "none";
             }  
         });
       }
-      const menu = document.querySelector(".conteneurButtonAndArrow");
+      titreSlider.style.opacity = "0";
+      dateSlider.style.opacity = "0";
+      const menu = document.querySelector(".conteneurButtonsAndArrow");
       menu.style.height = "35px";
-
     }
   }
 
