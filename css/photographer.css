@@ -55,32 +55,142 @@
     color: #525252;
 }
 
+.conteneurMenu {
+    margin-left: 100px;
+    display: flex;
+    flex-direction: row;
+}
+
 .buttonText {
     font-weight: bold;
 }
 
-/* à remplacer par un onclick.listenerevent */
-.dropdownButton {
-    display: none;
-}
-
-.dropdownButton:hover{
-    display:block;
-}
-
-label {
-    margin-left: 30px;
+.conteneurButtonAndArrow {
+    position:absolute;
+    left: 150px;
+    display: flex;
+    flex-direction: row;
     background-color: #901C1C;
-    color: #ffffff;
     border-radius: 5px;
     padding: 5px;
+    margin-left: 25px;
+    height: 35px;
 }
 
-.conteneurTri {
-    margin-left: 100px;
+.buttonMenu {
+    margin: 5px;
+}
+
+.conteneurButton {
+    display: flex;
+    flex-direction: column;
+    font-size: 18px;
+    align-items: flex-start;
+    position: relative;
+}
+
+.conteneurButtonDown {
+    display: flex;
+    flex-direction: column;
+    font-size: 18px;
+    align-items: flex-start;
+    position: relative;
+    height: 100px;
+}
+
+
+.arrowDown { 
+    transform-origin: center;
+    transform: rotate(180deg);
+    transition: transform 0.2s linear;
+    height:fit-content;
+}
+
+.conteneurButtonAndArrow .buttonDate{
+    display: none;
+    margin: 10px;
+    padding: 0px;
+}
+
+.conteneurButtonAndArrow .buttonTitre {
+    display: none;
+    margin: 10px;
+    padding: 0px;
+}
+
+.titreSlider {
+    border-top: solid 1px;
+    padding-top: 10px;
+    color: white;
+    margin: 0px;
+    padding: 0px;
+}
+
+.dateSlider {
+    border-top: solid 1px;
+    padding-top: 10px;
+    color: white;
+    margin: 0px;
+    padding: 0px;
+}
+
+.arrow {
+    transform-origin: center center;
+    background: none;
+	color: inherit;
+	border: none;
+    cursor: pointer;
+	font: inherit;
+	outline: inherit;
+    padding: 5px;
+    color: #FAFAFA
+}
+
+.conteneurButton button{
+    background-color: transparent;
+    color: #ffff;
+    padding: 3px;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.photoGrid {
+    display: flex;
+    flex-wrap: wrap;
+    width: auto;
+    justify-content: space-between;
+    margin: 0 100px;
+}
+
+.photoGrid img {
+    width: 350px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.mediaBox {
+    display: flex;
+    flex-direction: column;
+    color: #901C1C;
+    margin-bottom: 20px;
+}
+
+.titreEtLikes {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
+}
+
+.likesCounter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.likesCounter i {
+    margin-left: 5px;
 }
 
 .modal {

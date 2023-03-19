@@ -1,3 +1,8 @@
+async function getPhotographers() {
+    let response = await fetch('../../data/photographers.json');
+    return JSON.parse(await response.text());
+  }
+
 function photographerFactory(data) {
     const { name, portrait, city, country, tagline, price, id } = data;
     const picture = `assets/photographers/${portrait}`;
