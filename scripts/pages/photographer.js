@@ -57,6 +57,7 @@ function createPhoto (portrait) {
     return img;
 }
 
+//(refactoriser!)
 function createMenu() {
     const conteneurMenu = document.createElement("div");
     conteneurMenu.classList.add("conteneurMenu");
@@ -93,12 +94,9 @@ function createMenu() {
 
     conteneurMenu.appendChild(buttonText);
     conteneurMenu.appendChild(conteneurButtonsAndArrow);
-    
-
     conteneurButtonsAndArrow.appendChild(conteneurButton);
     conteneurButtonsAndArrow.appendChild(dropdownArrow);
     conteneurButton.appendChild(buttonPopularite);
-
     dateSlider.appendChild(buttonDate);
     titreSlider.appendChild(buttonTitre);
     conteneurButton.appendChild(dateSlider);
@@ -132,29 +130,41 @@ function displayPhotographer (data) {
     main.appendChild(menuTri);
 }
 
-//filtrer les noms
+//formater les noms des photographes
 function filterName (name) {
     const filterBySpace = name.split(" ")[0];
     const filterHyphen = filterBySpace.replace("-", " ");
     return filterHyphen;
 }
 
-//récupérer les photos
+//récupérer les media (refactoriser!)
 async function displayMedia(data, photograher) {
     const main = document.getElementById("main");
     //boucler sur chaque objet media
-    const grid = document.createElement("div");
     grid.classList.add("photoGrid");
     main.appendChild(grid);
     data.forEach((item) => {
-        const { title, image, likes, date, price } = item;
+        const { title, image, video, likes } = item;
         const { name } = photograher;
         const filteredName = filterName(name);
         const mediaBox = document.createElement("div");
         mediaBox.classList.add("mediaBox");
-        const media = document.createElement("img");
-        media.classList.add("media");
-        media.src = `../Sample Photos/${filteredName}/${image}`;
+
+
+        const mediaImage = document.createElement("img");
+        mediaImage.setAttribute("id", "media");
+        mediaBox.appendChild(mediaImage);
+        if(item.hasOwnProperty("image")) {
+            mediaImage.src = `../Sample Photos/${filteredName}/${image}`;
+            mediaImage.classList.add("media");
+        }
+        else{
+            const mediaVideo = document.createElement("video");
+            mediaVideo.setAttribute("id", "media");
+            mediaImage.parentNode.replaceChild(mediaVideo, mediaImage)
+            mediaVideo.src = `../Sample Photos/${filteredName}/${video}`;
+            mediaVideo.classList.add("media");
+        }
 
         const titreEtLike = document.createElement("div");
         titreEtLike.classList.add("titreEtLikes");
@@ -170,7 +180,6 @@ async function displayMedia(data, photograher) {
         //append
         main.appendChild(grid);
         grid.appendChild(mediaBox);
-        mediaBox.appendChild(media);
         mediaBox.appendChild(titreEtLike);
         titreEtLike.appendChild(titrePhoto);
         titreEtLike.appendChild(likesCounter);
@@ -179,13 +188,63 @@ async function displayMedia(data, photograher) {
     });
 }
 
+function displayDailyFee(data) {
+    const dailyFee = document.createElement("p");
+    dailyFee.innerText = data + "€ / jour";
+    return dailyFee;
+}
+
+function DisplayNumberOfTotalLikes(data) {
+    
+    let totalLikes = 0;
+    data.forEach((item) => {
+        totalLikes += item.likes;
+        return totalLikes;
+    });
+    return totalLikes;
+}
+
+
+function displayPrice(selectedPhotographer, selectedMedia) {
+    //générer les éléments
+    const { price } = selectedPhotographer;
+    const { likes } = selectedMedia
+    const bottomBox = document.createElement("div");
+    bottomBox.classList.add("bottomBox");
+
+    const likesBox = document.createElement("div");
+    likesBox.classList.add("likesBox");
+
+    const likesNumber = document.createElement("p");
+    likesNumber.classList.add("likesNumber");
+    
+    const likesHeart = document.createElement("div");
+    likesHeart.classList.add("likesHeart");
+    likesHeart.innerHTML = '<i class="fa-solid fa-heart"></i>';
+
+    const dailyFee = displayDailyFee(price);
+    let NumberOfTotalLikes = DisplayNumberOfTotalLikes(selectedMedia);
+    likesNumber.innerText = NumberOfTotalLikes;
+
+    //append all
+    main.appendChild(bottomBox);
+    likesBox.appendChild(likesNumber);
+    likesBox.appendChild(likesHeart);
+    bottomBox.appendChild(likesBox);
+    bottomBox.appendChild(dailyFee);
+}
+
+//constant à utiliser
+const grid = document.createElement("div");
+const url = new URL(window.location.href);
+let photographerId = url.searchParams.get("id");
+let selectedPhotographer = await filterPhotographers(photographerId);
+let selectedMedia = await filterMedia(photographerId);
+
 async function init() {
-    const url = new URL(window.location.href);
-    let photographerId = url.searchParams.get("id");
-    let selectedPhotographer = await filterPhotographers(photographerId);
-    let selectedMedia = await filterMedia(photographerId);
     displayPhotographer(selectedPhotographer);
     displayMedia(selectedMedia, selectedPhotographer);
+    displayPrice(selectedPhotographer, selectedMedia);
 };
 
 await init();
@@ -237,4 +296,30 @@ window.onclick = function(event) {
     }
   }
 
+//trier par popularité
+document.querySelector(".buttonPopularite").addEventListener("click", function(){
+    let sortedMedia = selectedMedia.sort((l1, l2) => {
+        return l1.likes < l2.likes;
+    });
+    document.querySelector(".photoGrid").innerHTML = "";
+    displayMedia(sortedMedia, selectedPhotographer);
+});
 
+//trier par titre
+document.querySelector(".buttonTitre").addEventListener("click", function(){
+    let sortedMedia = selectedMedia.sort((l1, l2) => {
+        return l1.title > l2.title;
+    });
+    document.querySelector(".photoGrid").innerHTML = "";
+    displayMedia(sortedMedia, selectedPhotographer);
+});
+
+//trier par date
+document.querySelector(".buttonDate").addEventListener("click", function(){
+    let sortedMedia = selectedMedia.sort((l1, l2) => {
+        return l1.date < l2.date;
+    });
+    document.querySelector(".photoGrid").innerHTML = "";
+
+    displayMedia(sortedMedia, selectedPhotographer);
+});

@@ -57,6 +57,7 @@
 
 .conteneurMenu {
     margin-left: 100px;
+    margin-bottom: 30px;
     display: flex;
     flex-direction: row;
 }
@@ -170,7 +171,7 @@
     margin: 0 100px;
 }
 
-.photoGrid img {
+.photoGrid .media {
     width: 350px;
     height: 300px;
     object-fit: cover;
@@ -199,6 +200,31 @@
 
 .likesCounter i {
     margin-left: 5px;
+}
+
+.bottomBox {
+    font-size: 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: -5px;
+    right: 40px;
+    height: 70px;
+    width: 370px;
+    background: #DB8876;
+    border-radius: 5px;
+}
+
+.likesBox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.likesBox i{
+    margin-left: 6px;
 }
 
 .modal {
