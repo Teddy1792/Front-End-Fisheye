@@ -235,6 +235,9 @@
 }
 
 .modal {
+    position: absolute;
+    top: 20%;
+    left: 20%;
     border-radius: 5px;
     background-color: #DB8876;
     width: 50%;

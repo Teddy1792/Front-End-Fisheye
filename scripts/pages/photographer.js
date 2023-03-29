@@ -16,7 +16,6 @@ async function filterMedia(photographerId) {
     return (filteredMedia);
 }
 
-//(refactoriser!)
 function createMenu() {
     const conteneurMenu = document.createElement("div");
     conteneurMenu.classList.add("conteneurMenu");
@@ -94,7 +93,7 @@ function filterName (name) {
     return filterHyphen;
 }
 
-//récupérer les media (refactoriser!)
+//récupérer les media
 async function displayMedia(selectedMedia, photograher) {
     const main = document.getElementById("main");
     //boucler sur chaque objet media
@@ -141,7 +140,7 @@ async function displayMedia(selectedMedia, photograher) {
         heartIcon.innerHTML = `<i class="fa-solid fa-heart"></i>`;
         createLikeCounter(likes);
 
-                //je ne vois pas comment mettre cette fonction dehors :/
+                //je ne vois pas comment mettre cette fonction
         function createLikeCounter(numberOfLikes, updateTotalLikes) {
             heartIcon.addEventListener('click', () => {
                 const totalLikeText = document.querySelector("p.likesNumber");

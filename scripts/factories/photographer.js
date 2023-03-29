@@ -52,3 +52,50 @@ function photographerFactory(data) {
     }
     return { name, picture, getUserCardDOM }
 }
+
+
+function displayDailyFee(price) {
+    const dailyFee = document.createElement("p");
+    dailyFee.innerText = price + "€ / jour";
+    return dailyFee;
+}
+
+function DisplayNumberOfTotalLikes() {
+    let totalLikes = 0;
+    const likesCounterParagraphs = document.querySelectorAll('div.likesCounter p');
+    likesCounterParagraphs.forEach((paragraph) => {
+    const likes = parseInt(paragraph.innerText);
+    totalLikes += likes;
+    });
+    return totalLikes;
+}
+
+//création de la bottomBox
+function displayPrice(selectedPhotographer, selectedMedia) {
+    //générer les éléments
+    const { price } = selectedPhotographer;
+    const { likes } = selectedMedia
+    const bottomBox = document.createElement("div");
+    bottomBox.classList.add("bottomBox");
+
+    const likesBox = document.createElement("div");
+    likesBox.classList.add("likesBox");
+
+    const likesNumber = document.createElement("p");
+    likesNumber.classList.add("likesNumber");
+    
+    const likesHeart = document.createElement("div");
+    likesHeart.classList.add("likesHeart");
+    likesHeart.innerHTML = '<i class="fa-solid fa-heart"></i>';
+
+    const dailyFee = displayDailyFee(price);
+    let NumberOfTotalLikes = DisplayNumberOfTotalLikes();
+    likesNumber.innerText = NumberOfTotalLikes;
+
+    //append all
+    main.appendChild(bottomBox);
+    likesBox.appendChild(likesNumber);
+    likesBox.appendChild(likesHeart);
+    bottomBox.appendChild(likesBox);
+    bottomBox.appendChild(dailyFee);
+}
