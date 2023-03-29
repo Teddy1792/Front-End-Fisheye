@@ -19,7 +19,6 @@ function photographerFactory(data) {
         const photographerId = id; // stockage de la data id dans une constante
         const url = new URL('photographer.html', window.location.href); // création de l'objet URL
         url.searchParams.set('id', photographerId); // assignation de la valeur id
-        console.log(url.href); // sortie: .../photographer.html?id=id
 
 //creation du link <a> contenant le lien vers les pages photographers
         const link = document.createElement( 'a' );

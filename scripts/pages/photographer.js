@@ -1,60 +1,19 @@
 //Mettre le code JavaScript lié à la page photographer.html
 
-//Je n'arrive pas à la récupérer dans la factory
-async function getPhotographers() {
-    let response = await fetch('../../data/photographers.json');
-    return JSON.parse(await response.text());
-  }
-
-
-async function filterPhotographers(data) {
+async function filterPhotographers(photographerId) {
     const { photographers } = await getPhotographers();
-    const filteredPhotographers = photographers.filter(function(photographer) {
-        return photographer.id.toString() === data;
+    const filteredPhotographers = photographers.find(function(photographer) {
+        return photographer.id.toString() === photographerId;
         });
-    return (filteredPhotographers[0]);
+    return (filteredPhotographers);
 }
 
-async function filterMedia(data) {
+async function filterMedia(photographerId) {
     const { media } = await getPhotographers();
     const filteredMedia = media.filter(function(item) {
-        return item.photographerId.toString() === data;
+        return item.photographerId.toString() === photographerId;
     });
     return (filteredMedia);
-}
-
-function createContainer () {
-    const container = document.createElement('div');
-    container.classList.add('conteneur');
-    return container;
-}
-
-function createName (data) {
-    const nom = document.createElement('p');
-    nom.classList.add("nom");
-    nom.textContent = `${data}`;
-    return nom;
-}
-
-function createLocation(city, country) {
-    const locationElement = document.createElement ('p');
-    locationElement.classList.add("location");
-    locationElement.innerText = `${city}, ${country}`;
-    return locationElement;
-}
-
-function createTagline (tagline) {
-    const taglineElement = document.createElement ('p');
-    taglineElement.classList.add("line");
-    taglineElement.innerText = `${tagline}`;
-    return taglineElement;
-}
-
-function createPhoto (portrait) {
-    const img = document.createElement( 'img' );
-    img.setAttribute("src", `assets/photographers/${portrait}`);
-    img.setAttribute("alt", "portrait du ou de la photograhe");
-    return img;
 }
 
 //(refactoriser!)
@@ -105,11 +64,9 @@ function createMenu() {
     return conteneurMenu;
 }
 
-
-
-function displayPhotographer (data) {
+function displayPhotographer (photographers) {
     //récupérer les data
-    const { name, portrait, city, country, tagline, price, id } = data;
+    const { name, portrait, city, country, tagline, price, id } = photographers;
     
     //générer les éléments
     const container = createContainer();
@@ -138,13 +95,13 @@ function filterName (name) {
 }
 
 //récupérer les media (refactoriser!)
-async function displayMedia(data, photograher) {
+async function displayMedia(selectedMedia, photograher) {
     const main = document.getElementById("main");
     //boucler sur chaque objet media
     grid.classList.add("photoGrid");
     main.appendChild(grid);
-    data.forEach((item) => {
-        const { title, image, video, likes } = item;
+    selectedMedia.forEach((item) => {
+        const { id, title, image, video, likes } = item;
         const { name } = photograher;
         const filteredName = filterName(name);
         const mediaBox = document.createElement("div");
@@ -170,12 +127,41 @@ async function displayMedia(data, photograher) {
         titreEtLike.classList.add("titreEtLikes");
         const titrePhoto = document.createElement("p");
         titrePhoto.innerText = `${title}`;
+
+        //création du compteur de like
         const likesCounter = document.createElement("div");
         likesCounter.classList.add("likesCounter");
-        const numberOfLikes = document.createElement("p");
-        numberOfLikes.innerText = `${likes}`;
-        const heartIcon = document.createElement("div");
+        const numberOfLikesText = document.createElement("p");
+        let numberOfLikes = likes;
+        let liked = false;
+        numberOfLikesText.innerText = numberOfLikes;
+
+        const heartIcon = document.createElement("button");
+        heartIcon.classList.add("heartIcon");
         heartIcon.innerHTML = `<i class="fa-solid fa-heart"></i>`;
+        createLikeCounter(likes);
+
+                //je ne vois pas comment mettre cette fonction dehors :/
+        function createLikeCounter(numberOfLikes, updateTotalLikes) {
+            heartIcon.addEventListener('click', () => {
+                const totalLikeText = document.querySelector("p.likesNumber");
+                let totalLikes = parseInt(totalLikeText.innerText);
+                console.log(totalLikes);
+                if (!liked) {
+                    numberOfLikes++;
+                    totalLikes++;
+                    totalLikeText.innerText = totalLikes;
+                    liked = true;
+                } else {
+                    numberOfLikes--;
+                    liked = false;
+                    totalLikes--;
+                    totalLikeText.innerText = totalLikes;
+                }
+                numberOfLikesText.innerText = numberOfLikes;
+              });
+              return numberOfLikes;
+        }
 
         //append
         main.appendChild(grid);
@@ -183,28 +169,29 @@ async function displayMedia(data, photograher) {
         mediaBox.appendChild(titreEtLike);
         titreEtLike.appendChild(titrePhoto);
         titreEtLike.appendChild(likesCounter);
-        likesCounter.appendChild(numberOfLikes);
+        likesCounter.appendChild(numberOfLikesText);
         likesCounter.appendChild(heartIcon);
     });
 }
 
-function displayDailyFee(data) {
+function displayDailyFee(price) {
     const dailyFee = document.createElement("p");
-    dailyFee.innerText = data + "€ / jour";
+    dailyFee.innerText = price + "€ / jour";
     return dailyFee;
 }
 
-function DisplayNumberOfTotalLikes(data) {
-    
+function DisplayNumberOfTotalLikes() {
     let totalLikes = 0;
-    data.forEach((item) => {
-        totalLikes += item.likes;
-        return totalLikes;
+    const likesCounterParagraphs = document.querySelectorAll('div.likesCounter p');
+    likesCounterParagraphs.forEach((paragraph) => {
+    const likes = parseInt(paragraph.innerText);
+    totalLikes += likes;
     });
     return totalLikes;
 }
 
 
+//création de la bottomBox
 function displayPrice(selectedPhotographer, selectedMedia) {
     //générer les éléments
     const { price } = selectedPhotographer;
@@ -223,7 +210,7 @@ function displayPrice(selectedPhotographer, selectedMedia) {
     likesHeart.innerHTML = '<i class="fa-solid fa-heart"></i>';
 
     const dailyFee = displayDailyFee(price);
-    let NumberOfTotalLikes = DisplayNumberOfTotalLikes(selectedMedia);
+    let NumberOfTotalLikes = DisplayNumberOfTotalLikes();
     likesNumber.innerText = NumberOfTotalLikes;
 
     //append all
@@ -251,7 +238,7 @@ await init();
 
 
         //fonctions pour le menu
-//ouverture du menu (refactoriser!)
+//ouverture du menu
 const dropdownArrow = document.querySelector(".arrow");
 dropdownArrow.addEventListener("click", function(){
     const titreSlider = document.querySelector(".titreSlider");
@@ -296,30 +283,26 @@ window.onclick = function(event) {
     }
   }
 
-//trier par popularité
+//trier par popularité/titre/date
+
+const sortMedia = (selectedMedia, sortCallback, selector) => {
+        let sortedMedia = selectedMedia.sort(sortCallback);
+        document.querySelector(".photoGrid").innerHTML = "";
+        displayMedia(sortedMedia, selectedPhotographer);
+    };
+
+//trier par likes
 document.querySelector(".buttonPopularite").addEventListener("click", function(){
-    let sortedMedia = selectedMedia.sort((l1, l2) => {
-        return l1.likes < l2.likes;
-    });
-    document.querySelector(".photoGrid").innerHTML = "";
-    displayMedia(sortedMedia, selectedPhotographer);
+    return sortMedia(selectedMedia, (l1, l2) => (l1.likes < l2.likes), ".buttonPopularite");
 });
+
 
 //trier par titre
 document.querySelector(".buttonTitre").addEventListener("click", function(){
-    let sortedMedia = selectedMedia.sort((l1, l2) => {
-        return l1.title > l2.title;
-    });
-    document.querySelector(".photoGrid").innerHTML = "";
-    displayMedia(sortedMedia, selectedPhotographer);
+    return sortMedia(selectedMedia, (l1, l2) => (l1.title > l2.title), ".buttonTitre")
 });
 
 //trier par date
 document.querySelector(".buttonDate").addEventListener("click", function(){
-    let sortedMedia = selectedMedia.sort((l1, l2) => {
-        return l1.date < l2.date;
+    return sortMedia(selectedMedia, (l1, l2) => (l1.date < l2.date), ".buttonDate")
     });
-    document.querySelector(".photoGrid").innerHTML = "";
-
-    displayMedia(sortedMedia, selectedPhotographer);
-});

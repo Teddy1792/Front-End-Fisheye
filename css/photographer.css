@@ -202,6 +202,13 @@
     margin-left: 5px;
 }
 
+.heartIcon {
+    background-color: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    color: #901C1C;
+}
+
 .bottomBox {
     font-size: 24px;
     display: flex;
