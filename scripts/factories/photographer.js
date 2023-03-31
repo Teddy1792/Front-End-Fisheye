@@ -99,3 +99,12 @@ function displayPrice(selectedPhotographer, selectedMedia) {
     bottomBox.appendChild(likesBox);
     bottomBox.appendChild(dailyFee);
 }
+
+
+async function filterPhotographers(photographerId) {
+    const { photographers } = await getPhotographers();
+    const filteredPhotographers = photographers.find(function(photographer) {
+        return photographer.id.toString() === photographerId;
+        });
+    return (filteredPhotographers);
+}

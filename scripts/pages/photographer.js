@@ -141,7 +141,7 @@ async function displayMedia(selectedMedia, photograher) {
         createLikeCounter(likes);
 
                 //je ne vois pas comment mettre cette fonction
-        function createLikeCounter(numberOfLikes, updateTotalLikes) {
+        function createLikeCounter(numberOfLikes) {
             heartIcon.addEventListener('click', () => {
                 const totalLikeText = document.querySelector("p.likesNumber");
                 let totalLikes = parseInt(totalLikeText.innerText);
