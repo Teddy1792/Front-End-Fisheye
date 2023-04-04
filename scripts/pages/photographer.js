@@ -1,5 +1,7 @@
 //Mettre le code JavaScript lié à la page photographer.html
 
+let currentIndex = 0;
+
 async function filterPhotographers(photographerId) {
     const { photographers } = await getPhotographers();
     const filteredPhotographers = photographers.find(function(photographer) {
@@ -93,7 +95,7 @@ function filterName (name) {
     return filterHyphen;
 }
 
-function createLightbox(selectedMedia, item, filteredName, currentIndex) {
+function createLightbox(selectedMedia, item, filteredName) {
     const lightbox = document.createElement("div");
     lightbox.classList.add("lightbox");
   
@@ -102,20 +104,20 @@ function createLightbox(selectedMedia, item, filteredName, currentIndex) {
 
     const mediaBox = document.createElement("div");
     mediaBox.classList.add("mediaLightBox");
-    if (selectedMedia[currentIndex].hasOwnProperty("image")){
-        const img = document.createElement("img");
-        img.classList.add("imgLightbox");
-        img.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].image}`;
-        mediaBox.appendChild(img);
-    }
-    else {
-        const video = document.createElement("video");
-        video.classList.add("videoLightbox");
-        video.setAttribute("controls", "");
-        video.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].video}`;
-        video.type = "video/mp4";
-        mediaBox.appendChild(video);
-    }
+
+    //création image
+    const img = document.createElement("img");
+    img.classList.add("imgLightbox");
+    img.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].image}`;
+    mediaBox.appendChild(img);
+
+    //création vidéo
+    const video = document.createElement("video");
+    video.classList.add("videoLightbox");
+    video.setAttribute("controls", "");
+    video.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].video}`;
+    video.type = "video/mp4";
+    mediaBox.appendChild(video);
   
     const mediaTitle = document.createElement("p");
     mediaTitle.classList.add("imgTitle");
@@ -127,7 +129,7 @@ function createLightbox(selectedMedia, item, filteredName, currentIndex) {
     leftButton.addEventListener("click", function () {
         currentIndex =
           currentIndex === 0 ? selectedMedia.length - 1 : currentIndex - 1;
-          updateMedia(selectedMedia, currentIndex, filteredName);
+          updateMedia(selectedMedia, filteredName);
           mediaTitle.innerText = selectedMedia[currentIndex].title;
       });
 
@@ -144,7 +146,7 @@ function createLightbox(selectedMedia, item, filteredName, currentIndex) {
     rightButton.addEventListener("click", function () {
         currentIndex =
           currentIndex === selectedMedia.length - 1 ? 0 : currentIndex + 1;
-        updateMedia(selectedMedia, currentIndex, filteredName);
+        updateMedia(selectedMedia, filteredName);
         mediaTitle.innerText = selectedMedia[currentIndex].title;
       });
 
@@ -157,12 +159,13 @@ function createLightbox(selectedMedia, item, filteredName, currentIndex) {
     lightbox.appendChild(rightButton);
   }
 
-function updateMedia(selectedMedia, currentIndex, filteredName) {
+function updateMedia(selectedMedia, filteredName) {
     const video = document.querySelector(".videoLightbox");
     const img = document.querySelector(".imgLightbox");
     if (selectedMedia[currentIndex].hasOwnProperty("image")) {
-        document.querySelector(".imgLightbox").style.display = "block";
         document.querySelector(".imgLightbox").src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].image}`;
+        document.querySelector(".imgLightbox").style.display = "block";
+        document.querySelector(".videoLightbox").style.display = "none";
     } else {
         document.querySelector(".imgLightbox").style.display = "none";
         document.querySelector(".videoLightbox").style.display = "block";
@@ -171,19 +174,22 @@ function updateMedia(selectedMedia, currentIndex, filteredName) {
   }
 
 
-function openLightbox(selectedMedia, item, filteredName, currentIndex) {
+function openLightbox(selectedMedia, item, filteredName) {
     const img = document.querySelector(".imgLightbox");
-    console.log(currentIndex);
+    const video = document.querySelector(".videoLightbox");
     if(selectedMedia[currentIndex].hasOwnProperty("image")) {
         img.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].image}`;
         const imgTitle = document.querySelector(".imgTitle");
         imgTitle.innerText = selectedMedia[currentIndex].title;
+        img.style.display = "block";
+        video.style.display = "none";
     }
     else{
-        const video = document.querySelector(".videoLightbox");
         video.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].video}`;
         const imgTitle = document.querySelector(".imgTitle");
         imgTitle.innerText = selectedMedia[currentIndex].title;
+        video.style.display = "block";
+        img.style.display = "none";
     }
     const lightbox = document.querySelector(".lightbox");
     lightbox.style.display = "flex";
@@ -208,7 +214,6 @@ async function displayMedia(selectedMedia, photograher) {
     main.appendChild(grid);
     selectedMedia.forEach((item) => {
 
-        const currentIndex = selectedMedia.indexOf(item);
         const { id, title, image, video, likes } = item;
         const { name } = photograher;
         const filteredName = filterName(name);
@@ -219,12 +224,13 @@ async function displayMedia(selectedMedia, photograher) {
         const mediaClick = document.createElement("div");
         mediaBox.appendChild(mediaClick);
         mediaClick.addEventListener("click", function(){
+        currentIndex = selectedMedia.indexOf(item);
                 if(document.querySelector(".lightbox") === null){
-                    createLightbox(selectedMedia, item, filteredName, currentIndex);
-                    openLightbox(selectedMedia, item, filteredName, currentIndex);
+                    createLightbox(selectedMedia, item, filteredName);
+                    openLightbox(selectedMedia, item, filteredName);
                 }
                 else{
-                    openLightbox(selectedMedia, item, filteredName, currentIndex);
+                    openLightbox(selectedMedia, item, filteredName);
                 }
         });
 

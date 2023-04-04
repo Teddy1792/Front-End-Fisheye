@@ -380,6 +380,14 @@ form input {
     border-radius: 5px;
 }
 
+.imgLightbox{
+    display: none;
+}
+
+.videoLightbox{
+    display: none;
+}
+
 .imgTitle {
     color: #901C1C;
 }
