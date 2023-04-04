@@ -314,3 +314,79 @@ form input {
     border: none;
     border-radius: 5px;
 }
+
+.whiteOut {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    display: none;
+}
+
+.lightbox {
+    background-color: #ffff;
+    width: 80%;
+    position: fixed;
+    top: 10%;
+    left: 10%;
+    display: none;
+    justify-content: center;
+}
+
+.lightboxButton {
+    background-color: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    color: #901C1C;
+    font-size: 56px;
+}
+
+.leftButton {
+    position: absolute;
+    top: 50%;
+    left: 5%;
+}
+
+.rightButton {
+    position: absolute;
+    top: 50%;
+    right: 5%;
+}
+
+.closeButton {
+    position: absolute;
+    top: 0%;
+    right: 5%;
+}
+
+.imgBox {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+}
+
+.mediaLightBox {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+}
+
+.lightbox img {
+    width: 100%;
+    height: 600px;
+    object-fit:cover;
+    border-radius: 5px;
+}
+
+.imgTitle {
+    color: #901C1C;
+}
+
+.lightbox video {
+    width: 100%;
+    height: 600px;
+    object-fit: contain;
+    border-radius: 5px;
+}

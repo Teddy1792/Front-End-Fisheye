@@ -93,39 +93,163 @@ function filterName (name) {
     return filterHyphen;
 }
 
+function createLightbox(selectedMedia, item, filteredName, currentIndex) {
+    const lightbox = document.createElement("div");
+    lightbox.classList.add("lightbox");
+  
+    const whiteOut = document.createElement("div");
+    whiteOut.classList.add("whiteOut");
+
+    const mediaBox = document.createElement("div");
+    mediaBox.classList.add("mediaLightBox");
+    if (selectedMedia[currentIndex].hasOwnProperty("image")){
+        const img = document.createElement("img");
+        img.classList.add("imgLightbox");
+        img.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].image}`;
+        mediaBox.appendChild(img);
+    }
+    else {
+        const video = document.createElement("video");
+        video.classList.add("videoLightbox");
+        video.setAttribute("controls", "");
+        video.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].video}`;
+        video.type = "video/mp4";
+        mediaBox.appendChild(video);
+    }
+  
+    const mediaTitle = document.createElement("p");
+    mediaTitle.classList.add("imgTitle");
+    mediaTitle.innerText = selectedMedia[currentIndex].title;
+
+    const leftButton = document.createElement("button");
+    leftButton.innerHTML = `<i class="fa-sharp fa-solid fa-angle-left"></i>`;
+    leftButton.classList.add("leftButton", "lightboxButton");
+    leftButton.addEventListener("click", function () {
+        currentIndex =
+          currentIndex === 0 ? selectedMedia.length - 1 : currentIndex - 1;
+          updateMedia(selectedMedia, currentIndex, filteredName);
+          mediaTitle.innerText = selectedMedia[currentIndex].title;
+      });
+
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = `<i class="fa-sharp fa-solid fa-xmark"></i>`;
+    closeButton.classList.add("closeButton", "lightboxButton");
+    closeButton.addEventListener("click", function () {
+      closeLightbox();
+    });
+
+    const rightButton = document.createElement("button");
+    rightButton.innerHTML = `<i class="fa-sharp fa-solid fa-angle-right"></i>`;
+    rightButton.classList.add("rightButton", "lightboxButton");
+    rightButton.addEventListener("click", function () {
+        currentIndex =
+          currentIndex === selectedMedia.length - 1 ? 0 : currentIndex + 1;
+        updateMedia(selectedMedia, currentIndex, filteredName);
+        mediaTitle.innerText = selectedMedia[currentIndex].title;
+      });
+
+    document.querySelector("main").appendChild(whiteOut);
+    document.querySelector("main").appendChild(lightbox);
+    lightbox.appendChild(mediaBox);
+    mediaBox.appendChild(mediaTitle);
+    lightbox.appendChild(leftButton);
+    lightbox.appendChild(closeButton);
+    lightbox.appendChild(rightButton);
+  }
+
+function updateMedia(selectedMedia, currentIndex, filteredName) {
+    const video = document.querySelector(".videoLightbox");
+    const img = document.querySelector(".imgLightbox");
+    if (selectedMedia[currentIndex].hasOwnProperty("image")) {
+        document.querySelector(".imgLightbox").style.display = "block";
+        document.querySelector(".imgLightbox").src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].image}`;
+    } else {
+        document.querySelector(".imgLightbox").style.display = "none";
+        document.querySelector(".videoLightbox").style.display = "block";
+        document.querySelector(".videoLightbox").src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].video}`;
+    }
+  }
+
+
+function openLightbox(selectedMedia, item, filteredName, currentIndex) {
+    const img = document.querySelector(".imgLightbox");
+    console.log(currentIndex);
+    if(selectedMedia[currentIndex].hasOwnProperty("image")) {
+        img.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].image}`;
+        const imgTitle = document.querySelector(".imgTitle");
+        imgTitle.innerText = selectedMedia[currentIndex].title;
+    }
+    else{
+        const video = document.querySelector(".videoLightbox");
+        video.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].video}`;
+        const imgTitle = document.querySelector(".imgTitle");
+        imgTitle.innerText = selectedMedia[currentIndex].title;
+    }
+    const lightbox = document.querySelector(".lightbox");
+    lightbox.style.display = "flex";
+    const whiteOut = document.querySelector(".whiteOut");
+    whiteOut.style.display = "flex";
+}
+
+
+function closeLightbox() {
+    const lightbox = document.querySelector(".lightbox");
+    lightbox.style.display = "none";
+    const whiteOut = document.querySelector(".whiteOut");
+    whiteOut.style.display = "none";
+}
+
 //récupérer les media
 async function displayMedia(selectedMedia, photograher) {
     const main = document.getElementById("main");
     //boucler sur chaque objet media
+    const grid = document.createElement("div");
     grid.classList.add("photoGrid");
     main.appendChild(grid);
     selectedMedia.forEach((item) => {
+
+        const currentIndex = selectedMedia.indexOf(item);
         const { id, title, image, video, likes } = item;
         const { name } = photograher;
         const filteredName = filterName(name);
+
+
         const mediaBox = document.createElement("div");
         mediaBox.classList.add("mediaBox");
-
-
-        const mediaImage = document.createElement("img");
-        mediaImage.setAttribute("id", "media");
-        mediaBox.appendChild(mediaImage);
-        if(item.hasOwnProperty("image")) {
-            mediaImage.src = `../Sample Photos/${filteredName}/${image}`;
-            mediaImage.classList.add("media");
-        }
-        else{
-            const mediaVideo = document.createElement("video");
-            mediaVideo.setAttribute("id", "media");
-            mediaImage.parentNode.replaceChild(mediaVideo, mediaImage)
-            mediaVideo.src = `../Sample Photos/${filteredName}/${video}`;
-            mediaVideo.classList.add("media");
-        }
+        const mediaClick = document.createElement("div");
+        mediaBox.appendChild(mediaClick);
+        mediaClick.addEventListener("click", function(){
+                if(document.querySelector(".lightbox") === null){
+                    createLightbox(selectedMedia, item, filteredName, currentIndex);
+                    openLightbox(selectedMedia, item, filteredName, currentIndex);
+                }
+                else{
+                    openLightbox(selectedMedia, item, filteredName, currentIndex);
+                }
+        });
 
         const titreEtLike = document.createElement("div");
         titreEtLike.classList.add("titreEtLikes");
         const titrePhoto = document.createElement("p");
         titrePhoto.innerText = `${title}`;
+
+        //gérer les images et les vidéos
+        //photo
+        if(item.hasOwnProperty("image")) {
+            const mediaImage = document.createElement("img");
+            mediaClick.appendChild(mediaImage);
+            mediaImage.src = `../Sample Photos/${filteredName}/${image}`;
+            mediaImage.classList.add("media");
+        }
+        //video
+        else{
+            const mediaVideo = document.createElement("video");
+            mediaClick.appendChild(mediaVideo);
+            mediaVideo.src = `../Sample Photos/${filteredName}/${video}`;
+            mediaVideo.classList.add("media", "mediaVideo");
+        }
+
+
 
         //création du compteur de like
         const likesCounter = document.createElement("div");
@@ -140,12 +264,10 @@ async function displayMedia(selectedMedia, photograher) {
         heartIcon.innerHTML = `<i class="fa-solid fa-heart"></i>`;
         createLikeCounter(likes);
 
-                //je ne vois pas comment mettre cette fonction
         function createLikeCounter(numberOfLikes) {
             heartIcon.addEventListener('click', () => {
                 const totalLikeText = document.querySelector("p.likesNumber");
                 let totalLikes = parseInt(totalLikeText.innerText);
-                console.log(totalLikes);
                 if (!liked) {
                     numberOfLikes++;
                     totalLikes++;

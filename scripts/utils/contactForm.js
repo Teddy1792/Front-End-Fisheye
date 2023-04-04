@@ -1,5 +1,3 @@
-//changer l'ordre d'appel dnas le html
-
 const url = new URL(window.location.href);
 let photographerId = url.searchParams.get("id");
 
