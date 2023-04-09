@@ -1,5 +1,9 @@
-//Mettre le code JavaScript lié à la page photographer.html
-
+//constant à utiliser
+const grid = document.createElement("div");
+const url = new URL(window.location.href);
+let photographerId = url.searchParams.get("id");
+let selectedPhotographer = await filterPhotographers(photographerId);
+let selectedMedia = await filterMedia(photographerId);
 let currentIndex = 0;
 
 async function filterPhotographers(photographerId) {
@@ -38,17 +42,20 @@ function createMenu() {
 
     const buttonPopularite = document.createElement("button");
     buttonPopularite.classList.add("buttonPopularite", "buttonMenu");
+    buttonPopularite.setAttribute('aria-label', 'Trier par popularité');
     buttonPopularite.innerHTML = "Popularité"
 
     const dateSlider = document.createElement("div");
     dateSlider.classList.add("dateSlider");
     const buttonDate = document.createElement("button");
+    buttonDate.setAttribute('aria-label', 'Trier par date');
     buttonDate.classList.add("buttonDate", "buttonMenu", "slider");
     buttonDate.innerHTML = "Date";
 
     const titreSlider = document.createElement("div");
     titreSlider.classList.add("titreSlider");
     const buttonTitre = document.createElement("button");
+    buttonTitre.setAttribute('aria-label', 'Trier par titre');
     buttonTitre.classList.add("buttonTitre", "buttonMenu", "slider");
     buttonTitre.innerHTML = "Titre";
 
@@ -150,6 +157,21 @@ function createLightbox(selectedMedia, item, filteredName) {
         mediaTitle.innerText = selectedMedia[currentIndex].title;
       });
 
+
+    document.addEventListener("keydown", function (event) {
+        if (event.code === "ArrowLeft") { // Left arrow key
+            currentIndex =
+            currentIndex === 0 ? selectedMedia.length - 1 : currentIndex - 1;
+            updateMedia(selectedMedia, filteredName);
+            mediaTitle.innerText = selectedMedia[currentIndex].title;
+        } else if (event.code === "ArrowRight") { // Right arrow key
+            currentIndex =
+            currentIndex === selectedMedia.length - 1 ? 0 : currentIndex + 1;
+          updateMedia(selectedMedia, filteredName);
+          mediaTitle.innerText = selectedMedia[currentIndex].title;
+        }
+      });
+
     document.querySelector("main").appendChild(whiteOut);
     document.querySelector("main").appendChild(lightbox);
     lightbox.appendChild(mediaBox);
@@ -208,6 +230,7 @@ function closeLightbox() {
 //récupérer les media
 async function displayMedia(selectedMedia, photograher) {
     const main = document.getElementById("main");
+
     //boucler sur chaque objet media
     const grid = document.createElement("div");
     grid.classList.add("photoGrid");
@@ -237,6 +260,7 @@ async function displayMedia(selectedMedia, photograher) {
         const titreEtLike = document.createElement("div");
         titreEtLike.classList.add("titreEtLikes");
         const titrePhoto = document.createElement("p");
+        titrePhoto.setAttribute("id", `${title}`);
         titrePhoto.innerText = `${title}`;
 
         //gérer les images et les vidéos
@@ -246,6 +270,7 @@ async function displayMedia(selectedMedia, photograher) {
             mediaClick.appendChild(mediaImage);
             mediaImage.src = `../Sample Photos/${filteredName}/${image}`;
             mediaImage.classList.add("media");
+            mediaImage.setAttribute("alt", `${title}`);
         }
         //video
         else{
@@ -253,6 +278,7 @@ async function displayMedia(selectedMedia, photograher) {
             mediaClick.appendChild(mediaVideo);
             mediaVideo.src = `../Sample Photos/${filteredName}/${video}`;
             mediaVideo.classList.add("media", "mediaVideo");
+            mediaVideo.setAttribute("alt", `${title}`);
         }
 
 
@@ -267,6 +293,7 @@ async function displayMedia(selectedMedia, photograher) {
 
         const heartIcon = document.createElement("button");
         heartIcon.classList.add("heartIcon");
+        heartIcon.setAttribute("aria-label", "ajouter un like à ce media");
         heartIcon.innerHTML = `<i class="fa-solid fa-heart"></i>`;
         createLikeCounter(likes);
 
@@ -348,17 +375,19 @@ function displayPrice(selectedPhotographer, selectedMedia) {
     bottomBox.appendChild(dailyFee);
 }
 
-//constant à utiliser
-const grid = document.createElement("div");
-const url = new URL(window.location.href);
-let photographerId = url.searchParams.get("id");
-let selectedPhotographer = await filterPhotographers(photographerId);
-let selectedMedia = await filterMedia(photographerId);
+function setAdditionalAriaLabels() {
+    const constactButton = document.querySelector(".contact_button");
+    constactButton.setAttribute("aria-label", "ouvrir le formulaire de contact");
+    const logo = document.querySelector(".logo");
+    logo.setAttribute("aria-label", "lien vers la page d'accueil");
+    logo.setAttribute("alt", "logo du site FishEye");
+}
 
 async function init() {
     displayPhotographer(selectedPhotographer);
     displayMedia(selectedMedia, selectedPhotographer);
     displayPrice(selectedPhotographer, selectedMedia);
+    setAdditionalAriaLabels();
 };
 
 await init();
@@ -367,6 +396,7 @@ await init();
         //fonctions pour le menu
 //ouverture du menu
 const dropdownArrow = document.querySelector(".arrow");
+dropdownArrow.setAttribute('aria-expanded', 'false');
 dropdownArrow.addEventListener("click", function(){
     const titreSlider = document.querySelector(".titreSlider");
     const dateSlider = document.querySelector(".dateSlider");
@@ -381,6 +411,9 @@ dropdownArrow.addEventListener("click", function(){
     slider.style.display = "block";
     titreSlider.style.opacity = "1";
     dateSlider.style.opacity = "1";
+
+    //add aria attributes
+    dropdownArrow.setAttribute('aria-expanded', 'true');
 });
 
 //fermeture du menu
@@ -407,15 +440,20 @@ window.onclick = function(event) {
       dateSlider.style.opacity = "0";
       const menu = document.querySelector(".conteneurButtonsAndArrow");
       menu.style.height = "35px";
+      //update aria attributes to indicate collapse
+      dropdownArrow.setAttribute('aria-expanded', 'false');
     }
   }
 
 //trier par popularité/titre/date
-
-const sortMedia = (selectedMedia, sortCallback, selector) => {
+const sortMedia = (selectedMedia, sortCallback) => {
         let sortedMedia = selectedMedia.sort(sortCallback);
-        document.querySelector(".photoGrid").innerHTML = "";
+        const grid = document.querySelector(".photoGrid");
+        document.querySelector("main").removeChild(grid);
         displayMedia(sortedMedia, selectedPhotographer);
+        const bottomBox = document.querySelector(".bottomBox");
+        document.querySelector("main").removeChild(bottomBox);
+        displayPrice(selectedPhotographer, selectedMedia);
     };
 
 //trier par likes
