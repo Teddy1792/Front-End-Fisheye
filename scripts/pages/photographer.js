@@ -21,6 +21,8 @@ async function filterMedia(photographerId) {
     });
     return (filteredMedia);
 }
+ 
+//test
 
 function createMenu() {
     const conteneurMenu = document.createElement("div");
