@@ -1,19 +1,12 @@
 //constant à utiliser
 const grid = document.createElement("div");
 const url = new URL(window.location.href);
-let photographerId = url.searchParams.get("id");
+let photographerId = url.searchParams.get("id"); //rédcupération de l'ID du ou de la photographe pour loader correctement la page
 let selectedPhotographer = await filterPhotographers(photographerId);
 let selectedMedia = await filterMedia(photographerId);
 let currentIndex = 0;
 
-async function filterPhotographers(photographerId) {
-    const { photographers } = await getPhotographers();
-    const filteredPhotographers = photographers.find(function(photographer) {
-        return photographer.id.toString() === photographerId;
-        });
-    return (filteredPhotographers);
-}
-
+//récupération des médias correspondant du ou de la photographe
 async function filterMedia(photographerId) {
     const { media } = await getPhotographers();
     const filteredMedia = media.filter(function(item) {
@@ -21,9 +14,8 @@ async function filterMedia(photographerId) {
     });
     return (filteredMedia);
 }
- 
-//test
 
+//création du menu de tri
 function createMenu() {
     const conteneurMenu = document.createElement("div");
     conteneurMenu.classList.add("conteneurMenu");
@@ -74,6 +66,7 @@ function createMenu() {
     return conteneurMenu;
 }
 
+//création de la box de présentation du ou de la photographe
 function displayPhotographer (photographers) {
     //récupérer les data
     const { name, portrait, city, country, tagline, price, id } = photographers;
@@ -104,6 +97,7 @@ function filterName (name) {
     return filterHyphen;
 }
 
+//création de la lightbox de défilement
 function createLightbox(selectedMedia, item, filteredName) {
     const lightbox = document.createElement("div");
     lightbox.classList.add("lightbox");
@@ -114,13 +108,13 @@ function createLightbox(selectedMedia, item, filteredName) {
     const mediaBox = document.createElement("div");
     mediaBox.classList.add("mediaLightBox");
 
-    //création image
+    //création de l'obet image
     const img = document.createElement("img");
     img.classList.add("imgLightbox");
     img.src = `../Sample Photos/${filteredName}/${selectedMedia[currentIndex].image}`;
     mediaBox.appendChild(img);
 
-    //création vidéo
+    //création de l'objet vidéo
     const video = document.createElement("video");
     video.classList.add("videoLightbox");
     video.setAttribute("controls", "");
@@ -132,6 +126,7 @@ function createLightbox(selectedMedia, item, filteredName) {
     mediaTitle.classList.add("imgTitle");
     mediaTitle.innerText = selectedMedia[currentIndex].title;
 
+    //création des boutons de navigation
     const leftButton = document.createElement("button");
     leftButton.innerHTML = `<i class="fa-sharp fa-solid fa-angle-left"></i>`;
     leftButton.classList.add("leftButton", "lightboxButton");
@@ -159,7 +154,7 @@ function createLightbox(selectedMedia, item, filteredName) {
         mediaTitle.innerText = selectedMedia[currentIndex].title;
       });
 
-
+    //ajout de la navigation au clavier
     document.addEventListener("keydown", function (event) {
         if (event.code === "ArrowLeft") { // Left arrow key
             currentIndex =
@@ -171,6 +166,8 @@ function createLightbox(selectedMedia, item, filteredName) {
             currentIndex === selectedMedia.length - 1 ? 0 : currentIndex + 1;
           updateMedia(selectedMedia, filteredName);
           mediaTitle.innerText = selectedMedia[currentIndex].title;
+        } else if (event.code === "Escape") { //esc key
+            closeLightbox();
         }
       });
 
@@ -183,6 +180,7 @@ function createLightbox(selectedMedia, item, filteredName) {
     lightbox.appendChild(rightButton);
   }
 
+//gestion de la navigation en fonction du fait que l'objet est une photo ou une vidéo
 function updateMedia(selectedMedia, filteredName) {
     const video = document.querySelector(".videoLightbox");
     const img = document.querySelector(".imgLightbox");
@@ -197,7 +195,7 @@ function updateMedia(selectedMedia, filteredName) {
     }
   }
 
-
+//gestion de l'ouverture de la lightbox en fonction du fait que l'objet est une photo ou une vidéo
 function openLightbox(selectedMedia, item, filteredName) {
     const img = document.querySelector(".imgLightbox");
     const video = document.querySelector(".videoLightbox");
@@ -221,7 +219,7 @@ function openLightbox(selectedMedia, item, filteredName) {
     whiteOut.style.display = "flex";
 }
 
-
+//fermeture de la lightbox
 function closeLightbox() {
     const lightbox = document.querySelector(".lightbox");
     lightbox.style.display = "none";
@@ -229,7 +227,7 @@ function closeLightbox() {
     whiteOut.style.display = "none";
 }
 
-//récupérer les media
+//récupération des media et création de la grid principale
 async function displayMedia(selectedMedia, photograher) {
     const main = document.getElementById("main");
 
@@ -382,9 +380,10 @@ function setAdditionalAriaLabels() {
     constactButton.setAttribute("aria-label", "ouvrir le formulaire de contact");
     const logo = document.querySelector(".logo");
     logo.setAttribute("aria-label", "lien vers la page d'accueil");
-    logo.setAttribute("alt", "logo du site FishEye");
 }
 
+
+//fonction principale d'intilisation de la page
 async function init() {
     displayPhotographer(selectedPhotographer);
     displayMedia(selectedMedia, selectedPhotographer);
@@ -459,17 +458,28 @@ const sortMedia = (selectedMedia, sortCallback) => {
     };
 
 //trier par likes
-document.querySelector(".buttonPopularite").addEventListener("click", function(){
-    return sortMedia(selectedMedia, (l1, l2) => (l1.likes < l2.likes), ".buttonPopularite");
-});
-
+document.querySelector(".buttonPopularite").addEventListener("click", function () {
+    return sortMedia(
+      selectedMedia,
+      (l1, l2) => l2.likes - l1.likes,
+      ".buttonPopularite"
+    );
+  });
 
 //trier par titre
-document.querySelector(".buttonTitre").addEventListener("click", function(){
-    return sortMedia(selectedMedia, (l1, l2) => (l1.title > l2.title), ".buttonTitre")
+document.querySelector(".buttonTitre").addEventListener("click", function () {
+  return sortMedia(
+    selectedMedia,
+    (l1, l2) => (l1.title > l2.title ? 1 : -1),
+    ".buttonTitre"
+  );
 });
 
 //trier par date
-document.querySelector(".buttonDate").addEventListener("click", function(){
-    return sortMedia(selectedMedia, (l1, l2) => (l1.date < l2.date), ".buttonDate")
-    });
+document.querySelector(".buttonDate").addEventListener("click", function () {
+  return sortMedia(
+    selectedMedia,
+    (l1, l2) => (l1.date < l2.date ? -1 : 1),
+    ".buttonDate"
+  );
+});

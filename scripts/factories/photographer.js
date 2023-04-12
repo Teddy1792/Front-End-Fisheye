@@ -39,7 +39,7 @@ function photographerFactory(data) {
 
         const priceElement = document.createElement ('p');
         priceElement.classList.add("price");
-        priceElement.innerText = `${price}€‎/jours`;
+        priceElement.innerText = `${price}€/jours`;
 
 //rattachement des éléments du DOM
         article.appendChild(link);
@@ -100,7 +100,7 @@ function displayPrice(selectedPhotographer, selectedMedia) {
     bottomBox.appendChild(dailyFee);
 }
 
-
+//récupération du ou de la photographe sélectionné(e)
 async function filterPhotographers(photographerId) {
     const { photographers } = await getPhotographers();
     const filteredPhotographers = photographers.find(function(photographer) {
