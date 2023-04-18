@@ -6,6 +6,101 @@ let selectedPhotographer = await filterPhotographers(photographerId);
 let selectedMedia = await filterMedia(photographerId);
 let currentIndex = 0;
 
+//navigation clavier
+let creationTabIndex = 1;
+let tabIndex = document.querySelectorAll("a");
+
+//creation des tabindex pour les menus (cf displayMedia pour le reste)
+function createTabindexPhotographers () {
+  document.querySelector("a").setAttribute("tabindex", creationTabIndex);
+  creationTabIndex += 1;
+  document.querySelector(".contact_button").setAttribute("tabindex", creationTabIndex);
+  creationTabIndex += 1;
+  document.querySelector(".buttonPopularite").setAttribute("tabindex", creationTabIndex);
+  creationTabIndex += 1;
+  document.querySelector(".buttonTitre").setAttribute("tabindex", creationTabIndex);
+  creationTabIndex += 1;
+  document.querySelector(".buttonDate").setAttribute("tabindex", creationTabIndex);
+  creationTabIndex += 1;
+}
+
+function updateTabindex (currentTabIndex) {
+  document.querySelectorAll(".mediaclick, .heartIcon").forEach(element => {
+    element.setAttribute("tabindex", currentTabIndex);
+    currentTabIndex +=1;
+  });
+}
+
+
+function createNavigation(elements) {
+  let index = 1;
+  const modal = document.getElementById("contact_modal");
+  document.addEventListener("keydown", function(event) {
+      if (event.key === "Tab" && modal.style === "display: none") {
+        event.preventDefault(); // prevent the default tab behavior
+        document.activeElement.blur(); // remove focus from the current element
+        // move focus to the next element with a tab index
+        elements[index].focus();
+        index = (index + 1) % elements.length;
+      }
+    });
+  //ouvrir le menu par focus
+  const menuKey = document.querySelector(".conteneurButtonsAndArrow");
+  menuKey.addEventListener("focusin", () => {
+    const dropdownArrow = document.querySelector(".arrow");
+    const titreSlider = document.querySelector(".titreSlider");
+    const dateSlider = document.querySelector(".dateSlider");
+    const slider = document.querySelector(".slider");
+    dropdownArrow.classList.add("arrowDown");
+    const menu = document.querySelector(".conteneurButtonsAndArrow");
+    menu.style.height = "115px";
+    const buttonDate = document.querySelector(".buttonDate");
+    const buttonTitre = document.querySelector(".buttonTitre");
+    buttonDate.style.display = "block";
+    buttonTitre.style.display = "block";
+    slider.style.display = "block";
+    titreSlider.style.opacity = "1";
+    dateSlider.style.opacity = "1";
+    dropdownArrow.setAttribute('aria-expanded', 'true');
+
+    //fermer le menu par focus
+    menuKey.addEventListener("blur", () => {
+      const sliders = document.querySelectorAll(".slider");
+      const titreSlider = document.querySelector(".titreSlider");
+      const dateSlider = document.querySelector(".dateSlider");
+      let dropdowns = document.getElementsByClassName("arrow");
+      for (let i = 0; i < dropdowns.length; i++) {
+        let openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains("arrowDown")) {
+          openDropdown.classList.remove("arrowDown");
+        }
+        sliders.forEach(slider => {
+            if (slider.classList.contains("slider")) {
+                slider.style.display = "none";
+            }
+        });
+      }
+      titreSlider.style.opacity = "0";
+      dateSlider.style.opacity = "0";
+      const menu = document.querySelector(".conteneurButtonsAndArrow");
+      menu.style.height = "35px";
+      dropdownArrow.setAttribute('aria-expanded', 'false');
+    });
+});
+}
+
+
+
+//creation de la fermeture de la modale
+function createClosingModal () {
+  document.addEventListener("keydown", function (event) {
+    if (event.code === "Escape") { //esc key
+        event.preventDefault();
+        closeModal();
+    }
+  });
+}
+
 //récupération des médias correspondant du ou de la photographe
 async function filterMedia(photographerId) {
     const { media } = await getPhotographers();
@@ -167,6 +262,7 @@ function createLightbox(selectedMedia, item, filteredName) {
           updateMedia(selectedMedia, filteredName);
           mediaTitle.innerText = selectedMedia[currentIndex].title;
         } else if (event.code === "Escape") { //esc key
+            event.preventDefault();
             closeLightbox();
         }
       });
@@ -245,6 +341,7 @@ async function displayMedia(selectedMedia, photograher) {
         const mediaBox = document.createElement("div");
         mediaBox.classList.add("mediaBox");
         const mediaClick = document.createElement("div");
+        mediaClick.classList.add("mediaclick");
         mediaBox.appendChild(mediaClick);
         mediaClick.addEventListener("click", function(){
         currentIndex = selectedMedia.indexOf(item);
@@ -281,8 +378,6 @@ async function displayMedia(selectedMedia, photograher) {
             mediaVideo.setAttribute("alt", `${title}`);
         }
 
-
-
         //création du compteur de like
         const likesCounter = document.createElement("div");
         likesCounter.classList.add("likesCounter");
@@ -313,6 +408,15 @@ async function displayMedia(selectedMedia, photograher) {
                     totalLikeText.innerText = totalLikes;
                 }
                 numberOfLikesText.innerText = numberOfLikes;
+              });
+              // Ajout manuel de la validation des likes
+              document.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                  const focusedElement = document.activeElement;
+                  if (focusedElement.tagName === "DIV") {
+                  focusedElement.click();
+                }
+                }
               });
               return numberOfLikes;
         }
@@ -383,12 +487,17 @@ function setAdditionalAriaLabels() {
 }
 
 
-//fonction principale d'intilisation de la page
+//fonction principale d'initialisation de la page
 async function init() {
     displayPhotographer(selectedPhotographer);
+    createTabindexPhotographers();
     displayMedia(selectedMedia, selectedPhotographer);
     displayPrice(selectedPhotographer, selectedMedia);
     setAdditionalAriaLabels();
+    createClosingModal();
+    updateTabindex(7);
+    let elements = document.querySelectorAll("[tabindex]"); 
+    createNavigation(elements);
 };
 
 await init();
@@ -455,6 +564,9 @@ const sortMedia = (selectedMedia, sortCallback) => {
         const bottomBox = document.querySelector(".bottomBox");
         document.querySelector("main").removeChild(bottomBox);
         displayPrice(selectedPhotographer, selectedMedia);
+        updateTabindex(7);
+        let elements = document.querySelectorAll("[tabindex]"); 
+        createNavigation(elements);
     };
 
 //trier par likes

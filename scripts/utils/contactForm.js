@@ -6,8 +6,32 @@ function displayModal() {
     greyOut();
     sendResult();
     const modal = document.getElementById("contact_modal");
-	modal.style.display = "block";
-}
+    modal.style.display = "block";
+    setTimeout(() => {
+        let input = document.querySelectorAll("input");
+        let button = modal.querySelector(".contact_button");
+        input = Array.from(input); // convert the NodeList to an array
+        input.push(button);
+        let tabindexModal = 0;
+        input.forEach(element => {
+            element.setAttribute("tabindex", tabindexModal);
+            tabindexModal += 1;
+        });
+        document.querySelector("input").focus();
+    }, 100);
+    //navigation spéciale
+    let indexModal = 1;
+    modal.addEventListener("keydown", function(event) {
+        if (event.key === "Tab") {
+          event.preventDefault();
+          document.activeElement.blur();
+          let elements = modal.querySelectorAll("[tabindex]");
+          elements[indexModal].focus();
+          indexModal = (indexModal + 1) % elements.length; // increment index and wrap around if necessary
+        }
+      });
+
+  }
 
 function closeModal() {
     const modal = document.getElementById("contact_modal");
