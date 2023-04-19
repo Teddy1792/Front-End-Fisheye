@@ -31,19 +31,34 @@ function updateTabindex (currentTabIndex) {
   });
 }
 
-
-function createNavigation(elements) {
+function createNavigationArrow() {
   let index = 1;
-  const modal = document.getElementById("contact_modal");
+  const elements = document.querySelectorAll("[tabindex]"); 
   document.addEventListener("keydown", function(event) {
-      if (event.key === "Tab" && modal.style === "display: none") {
-        event.preventDefault(); // prevent the default tab behavior
-        document.activeElement.blur(); // remove focus from the current element
-        // move focus to the next element with a tab index
-        elements[index].focus();
-        index = (index + 1) % elements.length;
-      }
-    });
+    if (event.key === "ArrowLeft") {
+      event.preventDefault(); // prevent the default tab behavior
+      document.activeElement.blur(); // remove focus from the current element
+      index = (index + elements.length - 1) % elements.length; // decrement index and wrap around if necessary
+      // move focus to the next element with a tab index
+      elements[index].focus();
+    }
+    else if (event.key === "ArrowRight") {
+      event.preventDefault(); // prevent the default tab behavior
+      document.activeElement.blur(); // remove focus from the current element
+      // move focus to the next element with a tab index
+      index = (index + 1) % elements.length; // increment index and wrap around if necessary
+      elements[index].focus();
+    }
+  });
+}
+
+function createNavigation() {
+    //navigation au clavier sur la page
+    const modal = document.getElementById("contact_modal");
+    if (!modal.hasAttribute("style")) {
+      createNavigationArrow();
+    }
+
   //ouvrir le menu par focus
   const menuKey = document.querySelector(".conteneurButtonsAndArrow");
   menuKey.addEventListener("focusin", () => {
@@ -496,8 +511,7 @@ async function init() {
     setAdditionalAriaLabels();
     createClosingModal();
     updateTabindex(7);
-    let elements = document.querySelectorAll("[tabindex]"); 
-    createNavigation(elements);
+    createNavigation();
 };
 
 await init();
@@ -565,8 +579,6 @@ const sortMedia = (selectedMedia, sortCallback) => {
         document.querySelector("main").removeChild(bottomBox);
         displayPrice(selectedPhotographer, selectedMedia);
         updateTabindex(7);
-        let elements = document.querySelectorAll("[tabindex]"); 
-        createNavigation(elements);
     };
 
 //trier par likes

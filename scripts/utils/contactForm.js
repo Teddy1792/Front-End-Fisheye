@@ -1,11 +1,11 @@
 const url = new URL(window.location.href);
 let photographerId = url.searchParams.get("id");
+const modal = document.getElementById("contact_modal");
 
 function displayModal() {
     GenerateInModal();
     greyOut();
     sendResult();
-    const modal = document.getElementById("contact_modal");
     modal.style.display = "block";
     setTimeout(() => {
         let input = document.querySelectorAll("input");
@@ -20,18 +20,26 @@ function displayModal() {
         document.querySelector("input").focus();
     }, 100);
     //navigation spéciale
-    let indexModal = 1;
-    modal.addEventListener("keydown", function(event) {
-        if (event.key === "Tab") {
+    let indexModal = 0;
+    if (modal) { // check if modal exists
+      modal.addEventListener("keydown", function(event) {
+        if (event.key === "ArrowUp") {
           event.preventDefault();
-          document.activeElement.blur();
           let elements = modal.querySelectorAll("[tabindex]");
+          elements[indexModal].blur();
+          indexModal = indexModal > 0 ? indexModal - 1 : elements.length - 1;
           elements[indexModal].focus();
-          indexModal = (indexModal + 1) % elements.length; // increment index and wrap around if necessary
+        } else if (event.key === "ArrowDown") {
+          event.preventDefault();
+          let elements = modal.querySelectorAll("[tabindex]");
+          elements[indexModal].blur();
+          indexModal = indexModal < elements.length - 1 ? indexModal + 1 : 0;
+          elements[indexModal].focus();
         }
       });
+    }
+}
 
-  }
 
 function closeModal() {
     const modal = document.getElementById("contact_modal");

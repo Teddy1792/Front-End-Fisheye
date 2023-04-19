@@ -7,7 +7,7 @@
             photographersSection.appendChild(userCardDOM);
         });
         createTabindex();
-        createNavigation();
+        createNavigationIndex();
     };
 
     async function init() {
@@ -24,17 +24,22 @@
         });
       }
 
-      function createNavigation() {
+      function createNavigationIndex() {
         let index = 1;
         const elements = document.querySelectorAll("[tabindex]"); 
         document.addEventListener("keydown", function(event) {
-            if (event.key === "Tab") {
-                console.log(index);
+            if (event.key === "ArrowLeft") {
               event.preventDefault(); // prevent the default tab behavior
               document.activeElement.blur(); // remove focus from the current element
               // move focus to the next element with a tab index
               elements[index].focus();
-              console.log(elements[index]);
-              index = (index + 1) % elements.length;
+              index = (index + elements.length - 1) % elements.length;
+            }
+            else if (event.key === "ArrowRight") {
+              event.preventDefault(); // prevent the default tab behavior
+              document.activeElement.blur(); // remove focus from the current element
+              // move focus to the next element with a tab index
+              elements[index].focus();
+              index = (index + 1) % elements.length; // increment index and wrap around if necessary
             }
           });}
